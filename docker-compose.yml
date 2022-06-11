@@ -49,7 +49,7 @@ services:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
     restart: unless-stopped
     env_file:
-      - telegraf.env
+      - ./telegraf/telegraf.env
     depends_on:
       - influxdb
 
