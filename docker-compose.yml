@@ -1,0 +1,63 @@
+version: "3"
+services:
+  grafana:
+    image: grafana/grafana:8.5.2
+    container_name: grafana
+    restart: always
+    networks:
+      - monitoring_network
+      - traefik-proxy
+    volumes:
+      - grafana-volume:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+
+  influxdb:
+    image: influxdb
+    container_name: influxdb
+    restart: always
+    ports:
+      - 8086:8086
+      - 8089:8089/udp
+    networks:
+      - monitoring_network
+      - traefik-proxy
+    volumes:
+      - influxdb-volume:/var/lib/influxdb
+
+  prometheus:
+    image: prom/prometheus:v2.21.0
+    container_name: prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus
+      - prometheus-volume:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    restart: unless-stopped 
+
+  telegraf:
+    image: telegraf:1.22.3
+    container_name: telegraf
+    volumes:
+      - /:/hostfs:ro
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+    restart: unless-stopped
+    env_file:
+      - telegraf.env
+    depends_on:
+      - influxdb
+
+        
+volumes:
+  grafana-volume:
+    external: true
+  influxdb-volume:
+    external: true
+  prometheus-volume:
+    external: true
