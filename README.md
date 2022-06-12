@@ -1,4 +1,4 @@
-#Status for mixnode
+# Status for mixnode
 
 Demo: [No Trust Verify mixnode](status.notrustverify.ch/)
 
