@@ -1,6 +1,7 @@
 # Status for mixnode
 
 [Grafana dashboard](https://grafana.com/grafana/dashboards/16460-ntv-mixnode)
+
 Demo: [No Trust Verify mixnode](status.notrustverify.ch/)
 
 
