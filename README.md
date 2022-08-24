@@ -9,9 +9,6 @@ To authenticate from Grafana to InfluxDB a token is mandatory. [https://docs.inf
 
 [Grafana dashboard](https://grafana.com/grafana/dashboards/16460-ntv-mixnode)
 
-Create a new variable under `Settings`->`Variables`-> `New`
-
-![](resources/img/var.png)
 
 Demo: [No Trust Verify mixnode](https://status.notrustverify.ch/)
 
@@ -21,4 +18,6 @@ Demo: [No Trust Verify mixnode](https://status.notrustverify.ch/)
 2. Configure [influxdb](https://docs.influxdata.com/influxdb/v2.2/install/#set-up-influxdb-through-the-ui)
 3. `cp telegraf/telegraf.env.example telegraf/telegraf.env`
 4. Set your mixnodes and gateway identity key in `telegraf/telergaf.conf`
-5. docker-compose restart telegraf
+5. Create a new variable under `Settings`->`Variables`-> `New`
+![](resources/img/var.png)
+6. docker-compose restart telegraf
