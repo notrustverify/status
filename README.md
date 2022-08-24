@@ -20,3 +20,5 @@ Demo: [No Trust Verify mixnode](https://status.notrustverify.ch/)
 1. `docker-compose up -d`
 2. Configure [influxdb](https://docs.influxdata.com/influxdb/v2.2/install/#set-up-influxdb-through-the-ui)
 3. `cp telegraf/telegraf.env.example telegraf/telegraf.env`
+4. Set your mixnodes and gateway identity key in `telegraf/telergaf.conf`
+5. `docker-compose restart telegraf
