@@ -14,12 +14,13 @@ Demo: [No Trust Verify mixnode](https://status.notrustverify.ch/)
 
 ## Docker install
 
-1. `docker-compose up -d`
-2. Configure [influxdb](https://docs.influxdata.com/influxdb/v2.2/install/#set-up-influxdb-through-the-ui)
-3. `cp telegraf/telegraf.env.example telegraf/telegraf.env`. Set the values from influxdb install
-4. Set your mixnodes and gateway identity key in `telegraf/telegraf.conf`
-5. Create a new variable `mixnode` under `Settings`->`Variables`-> `New`. In `value separated by comma` set the mixnode name you set in telegfaf.conf`
+1. `cp telegraf/telegraf.env.example telegraf/telegraf.env`
+2. `docker-compose up -d`
+3. Configure [influxdb](https://docs.influxdata.com/influxdb/v2.2/install/#set-up-influxdb-through-the-ui)
+4. Set the values in `telegraf/telegraf.env` from influxdb install
+5. Set your mixnodes and gateway identity key in `telegraf/telegraf.conf`
+6. Create a new variable `mixnode` under `Settings`->`Variables`-> `New`. In `value separated by comma` set the mixnode name you set in telegfaf.conf`
 ![](resources/img/var.png)
-6. Create a new variable `timeframe` under `Settings`->`Variables`-> `New`
+7. Create a new variable `timeframe` under `Settings`->`Variables`-> `New`
 ![](resources/img/timeframe.png)
-6. docker-compose restart telegraf
+8. docker-compose restart telegraf
