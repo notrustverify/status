@@ -4,9 +4,6 @@ services:
     image: grafana/grafana:8.5.2
     container_name: grafana
     restart: always
-    networks:
-      - monitoring_network
-      - traefik-proxy
     volumes:
       - grafana-volume:/var/lib/grafana
     environment:
@@ -22,9 +19,6 @@ services:
     ports:
       - 8086:8086
       - 8089:8089/udp
-    networks:
-      - monitoring_network
-      - traefik-proxy
     volumes:
       - influxdb-volume:/var/lib/influxdb
 
