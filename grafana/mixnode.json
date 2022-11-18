@@ -9,13 +9,19 @@
       "pluginName": "InfluxDB"
     }
   ],
-  "__elements": [],
+  "__elements": {},
   "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.5.2"
+      "version": "9.2.4"
     },
     {
       "type": "datasource",
@@ -27,6 +33,12 @@
       "type": "panel",
       "id": "stat",
       "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "state-timeline",
+      "name": "State timeline",
       "version": ""
     },
     {
@@ -62,7 +74,6 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1654957037203,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -78,6 +89,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "packets",
             "axisPlacement": "auto",
             "axisWidth": 45,
@@ -170,7 +183,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -184,7 +198,7 @@
             "uid": "${DS_INFLUXDB-NTV}"
           },
           "hide": false,
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"packets_received_since_last_update\")\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"packets_received_since_last_update\")\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -239,14 +253,14 @@
         },
         "textMode": "value"
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"packets_received_since_startup\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"host\"] == \"telegraf-host\")\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"packets_received_since_startup\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -301,14 +315,14 @@
         },
         "textMode": "value"
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"packets_sent_since_startup\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"host\"] == \"telegraf-host\")\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"packets_sent_since_startup\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -326,7 +340,70 @@
             "fixedColor": "#ff5e49",
             "mode": "fixed"
           },
+          "mappings": [],
+          "max": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 30,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.2.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB-NTV}"
+          },
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"host\"] == \"telegraf-host\")\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"apy\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Last epoch APY",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB-NTV}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#ff5e49",
+            "mode": "fixed"
+          },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "NYM",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -370,17 +447,18 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 24,
+        "h": 16,
+        "w": 12,
         "x": 0,
-        "y": 26
+        "y": 32
       },
       "id": 18,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -394,7 +472,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")  \r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"total_delegation\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\") \r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"total_delegation\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)\r\n",
           "refId": "A"
         }
       ],
@@ -412,36 +490,7 @@
             "fixedColor": "#ff5e49",
             "mode": "fixed"
           },
-          "custom": {
-            "axisLabel": "NYM",
-            "axisPlacement": "auto",
-            "axisWidth": 50,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "NYM",
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -451,41 +500,122 @@
               }
             ]
           },
-          "unit": "none"
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 36
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
       },
-      "id": 19,
+      "id": 31,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "textMode": "value"
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"accumulated_rewards\")\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"host\"] == \"telegraf-host\")\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\") \r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"total_delegation\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
-      "title": "Accumulated NYM Rewards",
-      "type": "timeseries"
+      "title": "Total NYM delegated",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB-NTV}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 3,
+          "displayName": "Stake saturation",
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 0.9
+              },
+              {
+                "color": "dark-green",
+                "value": 0.99
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 1
+              },
+              {
+                "color": "dark-red",
+                "value": 1.5
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 40
+      },
+      "id": 32,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      },
+      "pluginVersion": "9.2.4",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB-NTV}"
+          },
+          "hide": false,
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"host\"] == \"telegraf-host\")\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"stake_saturation\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn:median, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Stake saturation",
+      "transformations": [],
+      "type": "gauge"
     },
     {
       "datasource": {
@@ -500,6 +630,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "NYM",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -546,14 +678,15 @@
         "h": 12,
         "w": 13,
         "x": 0,
-        "y": 46
+        "y": 48
       },
       "id": 22,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -567,7 +700,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_delegators_reward\")\n  |> map(fn: (r) => ({r with _value: (r._value*24.0*${timeframe}) / 1000000.0}))\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_operator_reward\")\n  |> map(fn: (r) => ({r with _value: (r._value*24.0*${timeframe}) / 1000000.0}))\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -586,6 +719,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "NYM",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -632,14 +767,15 @@
         "h": 12,
         "w": 11,
         "x": 13,
-        "y": 46
+        "y": 48
       },
       "id": 23,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -652,7 +788,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_total_node_reward\")\r\n  |> map(fn: (r) => ({r with _value: (r._value*24.0*${timeframe}) / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_total_node_reward\")\r\n  |> map(fn: (r) => ({r with _value: (r._value*24.0*${timeframe}) / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -671,6 +807,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "NYM",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -717,14 +855,15 @@
         "h": 8,
         "w": 9,
         "x": 0,
-        "y": 58
+        "y": 60
       },
       "id": 10,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -737,7 +876,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_delegators_reward\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_delegators_reward\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -756,6 +895,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "NYM",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -802,14 +943,15 @@
         "h": 8,
         "w": 9,
         "x": 9,
-        "y": 58
+        "y": 60
       },
       "id": 9,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -822,7 +964,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_total_node_reward\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_total_node_reward\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -841,6 +983,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "NYM",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -887,14 +1031,15 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 58
+        "y": 60
       },
       "id": 11,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -907,7 +1052,7 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_operator_reward\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_operator_reward\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -923,82 +1068,88 @@
         "defaults": {
           "color": {
             "fixedColor": "#ff5e49",
-            "mode": "fixed"
+            "mode": "continuous-RdYlGr"
           },
-          "custom": {
-            "axisLabel": "NYM",
-            "axisPlacement": "auto",
-            "axisWidth": 50,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "NYM",
+          "displayName": "Routing Score",
           "mappings": [],
+          "max": 100,
+          "min": 0,
           "thresholds": {
-            "mode": "absolute",
+            "mode": "percentage",
             "steps": [
               {
                 "color": "green"
+              },
+              {
+                "color": "dark-red",
+                "value": 10
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 30
+              },
+              {
+                "color": "#EAB839",
+                "value": 40
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "light-green",
+                "value": 60
+              },
+              {
+                "color": "green",
+                "value": 80
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 90
+              },
+              {
+                "color": "dark-green",
+                "value": 100
               }
             ]
           },
-          "unit": "none"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 24,
+        "h": 12,
+        "w": 9,
         "x": 0,
-        "y": 66
+        "y": 68
       },
-      "id": 25,
+      "id": 35,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom"
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
       },
-      "pluginVersion": "8.5.2",
+      "pluginVersion": "9.2.4",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"estimated_operator_reward\")\n  |> map(fn: (r) => ({r with _value: (r._value*24.0*${timeframe}) / 1000000.0}))\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"report_last_day\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn:median, createEmpty: false)",
           "refId": "A"
         }
       ],
-      "title": "Estimated operator rewards on $timeframe days",
-      "type": "timeseries"
+      "title": "Routing score last day",
+      "type": "gauge"
     },
     {
       "datasource": {
@@ -1012,6 +1163,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "axisWidth": 50,
@@ -1024,13 +1177,16 @@
               "tooltip": false,
               "viz": false
             },
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1040,7 +1196,7 @@
               "mode": "off"
             }
           },
-          "displayName": "uptime",
+          "displayName": "routing score",
           "mappings": [],
           "max": 110,
           "min": 0,
@@ -1085,17 +1241,18 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 76
+        "h": 12,
+        "w": 15,
+        "x": 9,
+        "y": 68
       },
       "id": 13,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1109,11 +1266,11 @@
             "type": "influxdb",
             "uid": "${DS_INFLUXDB-NTV}"
           },
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"report_last_hour\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: median, createEmpty: false)",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"report_last_hour\")\r\n  |> aggregateWindow(every: 1h, fn:median, createEmpty: false)",
           "refId": "A"
         }
       ],
-      "title": "Uptime in the mixnet",
+      "title": "Routing score last hour",
       "type": "timeseries"
     },
     {
@@ -1122,7 +1279,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 86
+        "y": 80
       },
       "id": 15,
       "panels": [],
@@ -1134,7 +1291,6 @@
         "type": "influxdb",
         "uid": "${DS_INFLUXDB-NTV}"
       },
-      "description": "This endpoint returns the number of times that the gateway has been selected from the rewarded set and had 1000 packets sent to it, before being used by the network monitor to test the rest of the network. ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1142,9 +1298,101 @@
             "mode": "fixed"
           },
           "custom": {
-            "axisLabel": "",
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "APY",
             "axisPlacement": "auto",
-            "axisWidth": 50,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "APY",
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 81
+      },
+      "id": 29,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB-NTV}"
+          },
+          "hide": false,
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"apy\")\r\n    |> aggregateWindow(every: v.windowPeriod, fn:median, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "APY",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB-NTV}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#ff5e49",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "NYM",
+            "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
             "fillOpacity": 0,
@@ -1170,10 +1418,11 @@
               "mode": "off"
             }
           },
-          "displayName": "time used",
+          "displayName": "NYM",
           "mappings": [],
+          "min": 0,
           "thresholds": {
-            "mode": "absolute",
+            "mode": "percentage",
             "steps": [
               {
                 "color": "green"
@@ -1185,117 +1434,18 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 24,
         "x": 0,
-        "y": 87
+        "y": 91
       },
-      "id": 20,
+      "id": 34,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.5.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "${DS_INFLUXDB-NTV}"
-          },
-          "query": "from(bucket: \"ntv\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"gateway\"] == \"ntv\")\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\n  |> filter(fn: (r) => r[\"_field\"] == \"count\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
-          "refId": "A"
-        }
-      ],
-      "title": "Gateway - Number of times it has been used for network testing",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "${DS_INFLUXDB-NTV}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "#ff5e49",
-            "mode": "fixed"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "points",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 0,
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "index": 1,
-                  "text": "False"
-                },
-                "1": {
-                  "index": 0,
-                  "text": "True"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "max": 1,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 95
-      },
-      "id": 28,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "hidden",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1310,7 +1460,77 @@
             "uid": "${DS_INFLUXDB-NTV}"
           },
           "hide": false,
-          "query": "from(bucket: \"ntv\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"ntv\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"active\")",
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"rewards_operators\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000.0}))\r\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Rewards Operator",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB-NTV}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "custom": {
+            "fillOpacity": 70,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "displayName": "Status",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 100
+      },
+      "id": 28,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "auto",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB-NTV}"
+          },
+          "hide": false,
+          "query": "from(bucket: \"${bucket}\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"mixnode\"] == \"${mixnode}\")\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"http\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"new_active\")",
           "refId": "A"
         }
       ],
@@ -1329,11 +1549,11 @@
           }
         }
       ],
-      "type": "timeseries"
+      "type": "state-timeline"
     }
   ],
   "refresh": "",
-  "schemaVersion": 36,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -1376,11 +1596,52 @@
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB-NTV}"
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"mixnode\",\n    predicate: (r) => true,\n    start: -12h\n)",
+        "description": "Mixnode",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Mixnode",
+        "multi": false,
+        "name": "mixnode",
+        "options": [],
+        "query": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: v.bucket,\n    tag: \"mixnode\",\n    predicate: (r) => true,\n    start: -12h\n)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "influxdb",
+          "uid": "${DS_INFLUXDB-NTV}"
+        },
+        "definition": "buckets()",
+        "description": "define the bucket where data are",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "bucket",
+        "options": [],
+        "query": "buckets()",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-14d",
+    "from": "now-30d",
     "to": "now"
   },
   "timepicker": {
@@ -1395,6 +1656,6 @@
   "timezone": "Europe/Zurich",
   "title": "NTV mixnode",
   "uid": "l71MWkX7k",
-  "version": 100,
+  "version": 167,
   "weekStart": ""
 }
